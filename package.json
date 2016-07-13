@@ -1,0 +1,28 @@
+{
+  "name": "pokedex",
+  "version": "0.1.0-alpha",
+  "description": "pokerevs geodb backend",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"haha you think we have tests?\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pokerevs/pokedex.git"
+  },
+  "author": "Erin <sylphofelectricity@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pokerevs/pokedex/issues"
+  },
+  "homepage": "https://github.com/pokerevs/pokedex#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "mongoose": "^4.5.4",
+    "morgan": "^1.7.0"
+  },
+  "devDependencies": {
+    "debug": "^2.2.0"
+  }
+}
