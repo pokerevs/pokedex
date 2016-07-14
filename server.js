@@ -18,6 +18,7 @@ const mongoUrl = process.env.DB || 'mongodb://localhost:32769/pokedex';
 // -- connect to the db
 mongoose.connect(mongoUrl);
 const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => console.log(`Connected to mongo database at ${mongoUrl}`));
 
 // -- register routes and middleware
@@ -25,7 +26,6 @@ app.use(morgan('dev'));
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-
 
 app.use('/api', api);
 
