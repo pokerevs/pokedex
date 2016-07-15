@@ -22,14 +22,16 @@ Takes an array of `/push/mapobject`-type documents. Commits them to the DB in bu
 
 ## /mapobjects
 ### GET /mapobjects/query/within
-Pass a GeoJSON polygon in the body as follows:
+Pass a GeoJSON geometry in the body as follows:
 ```
 {
-	"type": "Polygon",
-	"coordinates": [
-		[ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0],
-			[100.0, 1.0], [100.0, 0.0] ]
-    ]
+	"geometry": {
+		"type": "Polygon",
+		"coordinates": [
+			[ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0],
+				[100.0, 1.0], [100.0, 0.0] ]
+	    ]
+	}
 }
 ```
 It will return a list of GeoJSON points that are styleized/iconified and can be passed into mapbox/leaflet.
