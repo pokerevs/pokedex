@@ -21,7 +21,7 @@ Should be of the form:
 Takes an array of `/push/mapobject`-type documents. Commits them to the DB in bulk.
 
 ## /mapobjects
-### GET /mapobjects/query/within
+### GET /mapobjects/within
 Pass a GeoJSON geometry in the body as follows:
 ```
 {

@@ -66,6 +66,23 @@ router.post('/push/mapobject/bulk', jwtAuthenticate, function(req, res) {
 	});
 });
 
+router.get('/mapobjects/query/within', function (req, res) {
+	MapObject
+		.find({
+			location: {
+				$geoWithin: {
+					$geometry: req.body.geometry
+				}
+			}
+		}).exec((err, mapobjects) => {
+			if (err) {
+				res.status(500).json({'error': 'db', 'message': err.message}); return;
+			}
+			debug(mapobjects);
+			res.json(mapobjects);
+		});
+});
+
 function upsertMapObject(res, data, user) {
 	const query = {'uid': data.uid};
 	MapObject.findOneAndUpdate(query, {
