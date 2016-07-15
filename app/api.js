@@ -56,7 +56,7 @@ router.post('/push/mapobject/bulk', jwtAuthenticate, function(req, res) {
 	User.findById(req.user.id).exec((err, user) => {
 		debug(`authed user: ${user.fqname} <${user.username}> with roles ${user.roles}`);
 		if (_.includes(user.roles, 'push')) {
-			for (datum of res.body) {
+			for (datum of req.body) {
 				upsertMapObject(res, datum, user);
 			}
 		} else {
