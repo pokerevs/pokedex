@@ -9,10 +9,9 @@ const MapObjectSchema = new mongoose.Schema({
 		enum: ['pokestop', 'gym', 'spawnpoint', 'pokemon']
 	},
 	location: {
-		'type': {
+		type: {
 			type: String,
-			required: true,
-			default: 'Point'
+			default: 'Point',
 		},
 		coordinates: [Number],
 	},
@@ -21,6 +20,6 @@ const MapObjectSchema = new mongoose.Schema({
 	properties: mongoose.Schema.Types.Mixed, // incredibly bad practice, i know.
 	updatedBy: {type: String, ref: 'User'},
 }, {timestamps: true});
-MapObjectSchema.index({'location': '2dsphere'});
+MapObjectSchema.index({location: '2dsphere'});
 
 module.exports = mongoose.model('MapObject', MapObjectSchema);
