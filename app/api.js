@@ -59,6 +59,7 @@ router.post('/push/mapobject/bulk', jwtAuthenticate, function(req, res) {
 			for (datum of req.body) {
 				upsertMapObject(res, datum, user);
 			}
+			res.json({status: 'saved-successfully'}).end(); return;
 		} else {
 			res.status(401).json({error: 'role', message: 'your current roles do not permit you to push to the db'})
 		}
@@ -80,7 +81,6 @@ function upsertMapObject(res, data, user) {
 				console.log(err);
 				res.status(500).json({error: 'db', message: err.message, errors: err.errors}); return;
 			}
-			res.json({status: 'saved-successfully'});
 		});
 }
 
