@@ -33,22 +33,55 @@ router.post('/push/mapobject', jwtAuthenticate, function(req, res) {
 	User.findById(req.user.id).exec((err, user) => {
 		debug(`authed user: ${user.fqname} <${user.username}> with roles ${user.roles}`);
 		if (user.roles.includes('push')) {
-			const query = {'uid': req.body.uid};
-			MapObject.findOneAndUpdate(query, {
-				objectType: req.body.type,
-				uid: req.body.uid,
-				location: req.body.location,
-				meta: req.body.meta,
-			}, {upsert: true}, (err, doc) => {
-				if (err) {
-					res.status(500).json({error: 'db', error: err.message}); return;
-				}
-				res.json({status: 'saved-successfully'});
-			});
+			upsertMapObject(res, req.body, user);
 		} else {
 			res.status(401).json({error: 'role', message: 'your current roles do not permit you to push to the db'})
 		}
 	});
 });
+
+router.post('/push/mapobject/bulk', jwtAuthenticate, function(req, res) {
+	/*
+		post a document of the form
+		[
+			MapObjectDocument (see /push/mapobject)
+		]
+	*/
+
+	if (_.isEmpty(req.body)) {
+		res.status(400).json({error: 'nodata', message:'requires *some* data to be posted'});
+		return;
+	}
+
+	User.findById(req.user.id).exec((err, user) => {
+		debug(`authed user: ${user.fqname} <${user.username}> with roles ${user.roles}`);
+		if (user.roles.includes('push')) {
+			for (datum of res.body) {
+				upsertMapObject(res, datum, user);
+			}
+		} else {
+			res.status(401).json({error: 'role', message: 'your current roles do not permit you to push to the db'})
+		}
+	});
+});
+
+function upsertMapObject(res, data, user) {
+	const query = {'uid': data.uid};
+	MapObject.findOneAndUpdate(query, {
+		objectType: data.type,
+		uid: data.uid,
+		location: data.location,
+		properties: data.properties,
+		updatedBy: user._id,
+	}, {upsert: true, new: true, runValidators: true})
+		.populate('updatedBy')
+		.exec((err, doc) => {
+			if (err) {
+				console.log(err);
+				res.status(500).json({error: 'db', message: err.message, errors: err.errors}); return;
+			}
+			res.json({status: 'saved-successfully'});
+		});
+}
 
 module.exports = router;

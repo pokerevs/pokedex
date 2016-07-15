@@ -14,11 +14,13 @@ const MapObjectSchema = new mongoose.Schema({
 			required: true,
 			default: 'Point'
 		},
-		coordinates: [Number]
+		coordinates: [Number],
 	},
 	uid: {type: String, required: true, index: true, unique: true},
 	stale: {type: Boolean, default: false},
-	meta: mongoose.Schema.Types.Mixed, // incredibly bad practice, i know.
+	properties: mongoose.Schema.Types.Mixed, // incredibly bad practice, i know.
+	updatedBy: {type: String, ref: 'User'},
 }, {timestamps: true});
+MapObjectSchema.index({'location': '2dsphere'});
 
 module.exports = mongoose.model('MapObject', MapObjectSchema);
