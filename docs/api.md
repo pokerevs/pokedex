@@ -1,14 +1,14 @@
 # pokedex api
 
-the following all sits off of `/api`.
+**The following all sits under `/api`.**
 
 ## /push
 ### POST /push/mapobject
 Identify with an auth-token in the Authorization http header: `Authorization:Bearer <insert jwt token here>`.
-get your jwt token/account from barzamin, they have admin db access.
+Get your jwt token/account from the Mongo admin; they can create a new User in the users table for you.
 
-takes a json document representing an in-game object.
-should be of the form
+Takes a json document representing an in-game object.
+Should be of the form:
 ```
 {
 	type: enum{pokemon, gym, spawnpoint, pokestop},
@@ -18,4 +18,18 @@ should be of the form
 }
 ```
 ### POST /push/mapobject/bulk
-takes an array of `/push/mapobject`-type documents
+Takes an array of `/push/mapobject`-type documents. Commits them to the DB in bulk.
+
+## /mapobjects
+### GET /mapobjects/query/within
+Pass a GeoJSON polygon in the body as follows:
+```
+{
+	"type": "Polygon",
+	"coordinates": [
+		[ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0],
+			[100.0, 1.0], [100.0, 0.0] ]
+    ]
+}
+```
+It will return a list of GeoJSON points that are styleized/iconified and can be passed into mapbox/leaflet.
