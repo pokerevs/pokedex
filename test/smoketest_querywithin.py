@@ -5,17 +5,16 @@ import json
 BASE_URL = 'http://localhost:8080'
 
 payload = {
-	'uid': 0,
-	'type': 'pokemon',
-	'location': {
-		'type': 'Point',
-		'coordinates': [1.0, 1.0],
-	},
+	'geometry': {
+		'type': 'Polygon',
+		'coordinates': [[
+			[0, 0], [0, 10], [10, 10], [10, 0], [0, 0]
+		]]
+	}
 }
 
-r = requests.post(BASE_URL + '/api/push/mapobject',
-		json=payload,
-		headers={'Authorization': 'Bearer ' + API_KEY})
+r = requests.get(BASE_URL + '/api/mapobjects/within',
+		json=payload)
 
 print(r.json())
 assert r.status_code == 200
