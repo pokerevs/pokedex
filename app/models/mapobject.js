@@ -17,6 +17,7 @@ const MapObjectSchema = new mongoose.Schema({
 		coordinates: [Number]
 	},
 	uid: {type: String, required: true, index: true, unique: true},
+	stale: {type: Boolean, default: false},
 	meta: mongoose.Schema.Types.Mixed, // incredibly bad practice, i know.
 }, {timestamps: true});
 

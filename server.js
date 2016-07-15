@@ -9,17 +9,14 @@ const app = express();
 // -- import our app stuff
 const api = require('./app/api');
 
-// -- grab configuration
-// grab the $PORT envvar, otherwise default to port 8080
-const port = process.env.PORT || 8080;
-// do the same for the Mongo db's URL
-const mongoUrl = process.env.DB || 'mongodb://localhost:32769/pokedex';
+// -- get the config
+const config = require('./config');
 
 // -- connect to the db
-mongoose.connect(mongoUrl);
+mongoose.connect(config.mongoUrl);
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', () => console.log(`Connected to mongo database at ${mongoUrl}`));
+db.once('open', () => console.log(`Connected to mongo database at ${config.mongoUrl}`));
 
 // -- register routes and middleware
 app.use(morgan('dev'));
@@ -29,6 +26,12 @@ app.use(bodyParser.json());
 
 app.use('/api', api);
 
+app.use(function (err, req, res, next) {
+  if (err.name === 'UnauthorizedError') {
+  	console.log(err);
+    res.status(401).json({'error': 'auth', 'message': err.message});
+  }
+});
 // -- start stuff up
-app.listen(port);
-console.log(`Server listening on port ${port}`);
+app.listen(config.port);
+console.log(`Server listening on port ${config.port}`);
