@@ -32,7 +32,7 @@ router.post('/push/mapobject', jwtAuthenticate, function(req, res) {
 
 	User.findById(req.user.id).exec((err, user) => {
 		debug(`authed user: ${user.fqname} <${user.username}> with roles ${user.roles}`);
-		if (_.includes(user.roles.includes, 'push')) {
+		if (_.includes(user.roles, 'push')) {
 			upsertMapObject(res, req.body, user);
 		} else {
 			res.status(401).json({error: 'role', message: 'your current roles do not permit you to push to the db'})
@@ -55,7 +55,7 @@ router.post('/push/mapobject/bulk', jwtAuthenticate, function(req, res) {
 
 	User.findById(req.user.id).exec((err, user) => {
 		debug(`authed user: ${user.fqname} <${user.username}> with roles ${user.roles}`);
-		if (_.includes(user.roles.includes, 'push')) {
+		if (_.includes(user.roles, 'push')) {
 			for (datum of res.body) {
 				upsertMapObject(res, datum, user);
 			}
