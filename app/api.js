@@ -66,7 +66,7 @@ router.post('/push/mapobject/bulk', jwtAuthenticate, function(req, res) {
 	});
 });
 
-router.get('/mapobjects/query/within', function (req, res) {
+router.get('/mapobjects/within', function (req, res) {
 	MapObject
 		.find({
 			location: {
