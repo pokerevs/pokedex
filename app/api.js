@@ -31,7 +31,7 @@ router.post('/push/mapobject', jwtAuthenticate, function(req, res) {
 	}
 
 	User.findById(req.user.id).exec((err, user) => {
-		debug(`authed user: ${user.fqname} <${user.username}> with roles ${user.roles}`);
+		Console.log(`authed user: ${user.fqname} <${user.username}> with roles ${user.roles}`);
 		if (_.includes(user.roles, 'push')) {
 			upsertMapObject(res, req.body, user);
 		} else {
@@ -54,7 +54,7 @@ router.post('/push/mapobject/bulk', jwtAuthenticate, function(req, res) {
 	}
 
 	User.findById(req.user.id).exec((err, user) => {
-		debug(`authed user: ${user.fqname} <${user.username}> with roles ${user.roles}`);
+		Console.log(`authed user: ${user.fqname} <${user.username}> with roles ${user.roles}`);
 		if (_.includes(user.roles, 'push')) {
 			for (datum of req.body) {
 				upsertMapObject(res, datum, user);
@@ -78,7 +78,6 @@ router.get('/mapobjects/within', function (req, res) {
 			if (err) {
 				res.status(500).json({'error': 'db', 'message': err.message}); return;
 			}
-			debug(mapobjects);
 			res.json(mapobjects);
 		});
 });
