@@ -110,6 +110,7 @@ router.post('/mapobjects/bbox', function (req, res) {
                         });
                 });
 });
+
 router.get('/mapobjects/within', function (req, res) {
 	MapObject
 		.find({
@@ -134,6 +135,7 @@ function upsertMapObject(res, data, user) {
 		location: data.location,
 		properties: data.properties,
 		updatedBy: user._id,
+		stale: false,
 	}, {upsert: true, new: true, runValidators: true})
 		.populate('updatedBy')
 		.exec((err, doc) => {
