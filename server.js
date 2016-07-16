@@ -33,5 +33,5 @@ app.use(function (err, req, res, next) {
   }
 });
 // -- start stuff up
-app.listen(config.port);
+app.listen(config.port, 'localhost');
 console.log(`Server listening on port ${config.port}`);
