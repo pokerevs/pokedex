@@ -77,11 +77,9 @@ router.post('/mapobjects/bbox', function (req, res) {
         form.parse(req, function(err, fields, files) {
                 //res.writeHead(200, {'content-type': 'text/plain'});
                 //console.log('received upload:\n\n');
-                console.log(util.inspect({fields: fields, files: files}));
                 prebbox = fields.bbox
                 p2b = prebbox.split(",")
                 bbox = [[parseFloat(p2b[0]), parseFloat(p2b[1])],[parseFloat(p2b[2]),parseFloat(p2b[3])]]
-                console.log("Bbox of %j", bbox)
                 //{$or: [{"properties.WillDisappear": { $lt: 1468633519430}}}, {"properties.WillDisappear": {$exists: false}}}]}
                 MapObject
                         .find({
@@ -89,7 +87,9 @@ router.post('/mapobjects/bbox', function (req, res) {
                                         $geoWithin: {
                                                 $box: bbox
                                         }
-                                }, $or: [{"properties.WillDisappear": { $lt: 1468633519430}}, {"properties.WillDisappear": {$exists: false}}]
+                                }, 
+                                updatedAt: { $gt: Date.now() - 1000 * 60 * 15 },
+                                $or: [{"properties.WillDisappear": { $lt: Date.now()}}, {"properties.WillDisappear": {$exists: false}}]
                         }).exec((err, mapobjects) => {
                                 if (err) {
                                         res.status(500).json({'error': 'db', 'message': err.message}); return;
@@ -104,7 +104,6 @@ router.post('/mapobjects/bbox', function (req, res) {
                                     if(!retobj.properties){
                                         retobj.properties = {id: "junk"}
                                     }
-                                    console.log(mapobjects[i])
                                     retobj.type = "Feature"
                                     returnthing.push(retobj)
                                 }
