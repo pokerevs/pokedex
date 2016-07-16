@@ -88,8 +88,7 @@ router.post('/mapobjects/bbox', function (req, res) {
                                                 $box: bbox
                                         }
                                 }, 
-                                $or: [{"objectType": "pokemon", updatedAt: { $gt: Date.now() - 1000 * 60 * 15 }},{"objectType": {$ne : "pokemon"}}],
-                                $or: [{"properties.WillDisappear": { $lt: Date.now()}}, {"properties.WillDisappear": {$exists: false}}]
+                                $or: [{"objectType": "pokemon", $or: [{"properties.WillDisappear": { $gt: Date.now()}}, {"properties.WillDisappear": {$exists: false}, updatedAt: { $gt: Date.now() - 1000 * 60 * 15 }}]},{"objectType": {$ne : "pokemon"}}],
                         }).exec((err, mapobjects) => {
                                 if (err) {
                                         res.status(500).json({'error': 'db', 'message': err.message}); return;
