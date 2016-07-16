@@ -82,13 +82,14 @@ router.post('/mapobjects/bbox', function (req, res) {
                 p2b = prebbox.split(",")
                 bbox = [[parseFloat(p2b[0]), parseFloat(p2b[1])],[parseFloat(p2b[2]),parseFloat(p2b[3])]]
                 console.log("Bbox of %j", bbox)
+                //{$or: [{"properties.WillDisappear": { $lt: 1468633519430}}}, {"properties.WillDisappear": {$exists: false}}}]}
                 MapObject
                         .find({
                                 location: {
                                         $geoWithin: {
                                                 $box: bbox
                                         }
-                                }
+                                }, $or: [{"properties.WillDisappear": { $lt: 1468633519430}}, {"properties.WillDisappear": {$exists: false}}]
                         }).exec((err, mapobjects) => {
                                 if (err) {
                                         res.status(500).json({'error': 'db', 'message': err.message}); return;
