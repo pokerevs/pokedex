@@ -1,4 +1,6 @@
 const debug = require('debug')('api');
+const util = require('util')
+const formidable = require('formidable')
 const express = require('express'),
 			router = express.Router(),
 			_ = require('lodash');
@@ -66,6 +68,49 @@ router.post('/push/mapobject/bulk', jwtAuthenticate, function(req, res) {
 	});
 });
 
+router.post('/mapobjects/bbox', function (req, res) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        //res.setHeader('Access-Control-Allow-Origin', 'localhost');
+        var form = new formidable.IncomingForm();
+        var bbox
+
+        form.parse(req, function(err, fields, files) {
+                //res.writeHead(200, {'content-type': 'text/plain'});
+                //console.log('received upload:\n\n');
+                prebbox = fields.bbox
+                p2b = prebbox.split(",")
+                bbox = [[parseFloat(p2b[0]), parseFloat(p2b[1])],[parseFloat(p2b[2]),parseFloat(p2b[3])]]
+                //{$or: [{"properties.WillDisappear": { $lt: 1468633519430}}}, {"properties.WillDisappear": {$exists: false}}}]}
+                MapObject
+                        .find({
+                                location: {
+                                        $geoWithin: {
+                                                $box: bbox
+                                        }
+                                }, 
+                                updatedAt: { $gt: Date.now() - 1000 * 60 * 15 },
+                                $or: [{"properties.WillDisappear": { $lt: Date.now()}}, {"properties.WillDisappear": {$exists: false}}]
+                        }).exec((err, mapobjects) => {
+                                if (err) {
+                                        res.status(500).json({'error': 'db', 'message': err.message}); return;
+                                }
+                                returnthing = []
+                                for (var i=0; i<mapobjects.length; ++i){
+                                    //{"geometry": {"coordinates": [-118.725905, 34.287412], "type": "Point"}, "id": "4d6cf9c4e3af43289b4ba8e9219b552f.16", "properties": {"LastModifiedMs": 1468561160967, "id": "4d6cf9c4e3af43289b4ba8e9219b552f.16", "marker-color": "808080", "marker-symbol": "circle", "title": "Pok\u00e9Stop", "type": "pokestop"}, "type": "Feature"}
+                                    retobj = {}
+                                    retobj.geometry = mapobjects[i].location
+                                    retobj.id = mapobjects[i].uid
+                                    retobj.properties = mapobjects[i].properties
+                                    if(!retobj.properties){
+                                        retobj.properties = {id: "junk"}
+                                    }
+                                    retobj.type = "Feature"
+                                    returnthing.push(retobj)
+                                }
+                                res.json({features: returnthing, type: "FeatureCollection"});
+                        });
+                });
+});
 router.get('/mapobjects/within', function (req, res) {
 	MapObject
 		.find({
