@@ -72,7 +72,7 @@ router.post('/mapobjects/bbox', function (req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     const form = new formidable.IncomingForm();
     form.parse(req, function(err, fields, files) {
-        const p2b = form.bbox.split(",");
+        const p2b = fields.bbox.split(",");
         const bbox = [[parseFloat(p2b[0]), parseFloat(p2b[1])],[parseFloat(p2b[2]),parseFloat(p2b[3])]];
         MapObject
             .find({
