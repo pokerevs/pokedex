@@ -73,6 +73,11 @@ router.post('/mapobjects/bbox', function (req, res) {
     const form = new formidable.IncomingForm();
     form.parse(req, function(err, fields, files) {
         const p2b = fields.bbox.split(",");
+        const zoom = fields.zoom
+        if (parseInt(zoom) < 10) {
+            res.json({features: {}, type: "FeatureCollection"});
+            return;
+        }
         const bbox = [[parseFloat(p2b[0]), parseFloat(p2b[1])],[parseFloat(p2b[2]),parseFloat(p2b[3])]];
         MapObject
             .find({
@@ -97,22 +102,6 @@ router.post('/mapobjects/bbox', function (req, res) {
                 res.json({features: features, type: "FeatureCollection"});
         	});
     });
-});
-
-router.get('/mapobjects/within', function (req, res) {
-	MapObject
-		.find({
-			location: {
-				$geoWithin: {
-					$geometry: req.body.geometry
-				}
-			}
-		}).exec((err, mapobjects) => {
-			if (err) {
-				res.status(500).json({'error': 'db', 'message': err.message}); return;
-			}
-			res.json(mapobjects);
-		});
 });
 
 function upsertMapObject(res, data, user) {
