@@ -69,34 +69,44 @@ router.post('/push/mapobject/bulk', jwtAuthenticate, function(req, res) {
 });
 
 router.post('/mapobjects/bbox', function (req, res) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    const form = new formidable.IncomingForm();
-    form.parse(req, function(err, fields, files) {
-        const p2b = fields.bbox.split(",");
-        const bbox = [[parseFloat(p2b[0]), parseFloat(p2b[1])],[parseFloat(p2b[2]),parseFloat(p2b[3])]];
-        MapObject
-            .find({
-            	location: {
-			    	$geoWithin: {
-                        $box: bbox
-                    }
-                }, 
-                $or: [{"objectType": "pokemon", $or: [{"properties.WillDisappear": { $gt: Date.now()}}, {"properties.WillDisappear": {$exists: false}, updatedAt: { $gt: Date.now() - 1000 * 60 * 15 }}]},{"objectType": {$ne : "pokemon"}}],
-            }).exec((err, mapobjects) => {
-            	if (err) {
-                	res.status(500).json({'error': 'db', 'message': err.message}); return;
+	res.setHeader('Access-Control-Allow-Origin', '*');
+	const form = new formidable.IncomingForm();
+	form.parse(req, function(err, fields, files) {
+		const p2b = fields.bbox.split(",");
+		const bbox = [[parseFloat(p2b[0]), parseFloat(p2b[1])],[parseFloat(p2b[2]),parseFloat(p2b[3])]];
+		MapObject
+			.find({
+				location: {
+					$geoWithin: {
+						$box: bbox
+					}
+				},
+                $or: [
+                    {
+                        "objectType": "pokemon",
+                        $or: [
+                            {"properties.WillDisappear": { $gt: Date.now()}},
+                            {"properties.WillDisappear": {$exists: false}, updatedAt: { $gt: Date.now() - 1000 * 60 * 15 }}
+                        ]
+                    },
+                    {"objectType": {$ne : "pokemon"}}
+                ],
+			}).exec((err, mapobjects) => {
+				if (err) {
+					res.status(500).json({'error': 'db', 'message': err.message}); return;
                 }
-                features = _.map(mapobjects, (mapobject) => {
-                	return {
-                		geometry: mapobject.location,
-                		id: mapobject.uid,
-                		properties: mapobject.properties || {id: "junk"},
-                		type: 'Feature',
-                	};
-                });
-                res.json({features: features, type: "FeatureCollection"});
-        	});
-    });
+
+				const features = _.map(mapobjects, (mapobject) => {
+					return {
+						geometry: mapobject.location,
+						id: mapobject.uid,
+						properties: mapobject.properties || {id: "junk"},
+						type: 'Feature',
+					};
+				});
+				res.json({features: features, type: "FeatureCollection"});
+			});
+	});
 });
 
 router.get('/mapobjects/within', function (req, res) {

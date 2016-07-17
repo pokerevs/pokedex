@@ -27,11 +27,11 @@ app.use(bodyParser.json());
 app.use('/api', api);
 
 app.use(function (err, req, res, next) {
-  if (err.name === 'UnauthorizedError') {
-  	console.log(err);
+  if (err.name === 'UnauthorizedError') { // deal with jwt auth errors
     res.status(401).json({'error': 'auth', 'message': err.message});
   }
 });
+
 // -- start stuff up
 app.listen(config.port, 'localhost');
 console.log(`Server listening on port ${config.port}`);
