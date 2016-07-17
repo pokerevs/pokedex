@@ -19,7 +19,7 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => console.log(`Connected to mongo database at ${config.mongoUrl}`));
 
 // -- register routes and middleware
-app.use(morgan('dev'));
+app.use(morgan());
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
