@@ -1,5 +1,6 @@
 // pokedex v0.1.0-alpha, whee!
 
+require('newrelic');
 const express = require('express'),
 	  mongoose = require('mongoose'),
 	  morgan = require('morgan'),
