@@ -1,0 +1,33 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: pokedex-deployment
+spec:
+  replicas: 3
+  template:
+    metadata:
+      name: pokedex
+      labels:
+        app: pokedex
+    spec:
+      containers:
+      - name: pokedex
+        image: us.gcr.io/pokrev-r3v3rs3/pokedex
+        env:
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: jwt-secret
+              key: secret
+        - name: DB
+          valueFrom:
+            secretKeyRef:
+              name: db
+              key: url
+        - name: NEWRELIC_KEY
+          valueFrom:
+            secretKeyRef:
+              name: newrelic
+              key: license
+        ports:
+        - containerPort: 8080

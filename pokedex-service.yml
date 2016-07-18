@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: pokedex
+  name: pokedex
+spec:
+  ports:
+  - targetPort: 8080
+    port: 80
+    protocol: TCP
+  selector:
+    app: pokedex
+  type: LoadBalancer
