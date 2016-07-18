@@ -96,7 +96,7 @@ router.post('/mapobjects/bbox', function (req, res) {
                     },
                     {"objectType": {$ne : "pokemon"}}
                 ],
-            }).exec((err, mapobjects) => {
+            }).lean().exec((err, mapobjects) => {
             	if (err) {
                 	res.status(500).json({'error': 'db', 'message': err.message}); return;
                 }
