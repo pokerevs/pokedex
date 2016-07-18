@@ -69,18 +69,23 @@ router.post('/push/mapobject/bulk', jwtAuthenticate, function(req, res) {
 });
 
 router.post('/mapobjects/bbox', function (req, res) {
-	res.setHeader('Access-Control-Allow-Origin', '*');
-	const form = new formidable.IncomingForm();
-	form.parse(req, function(err, fields, files) {
-		const p2b = fields.bbox.split(",");
-		const bbox = [[parseFloat(p2b[0]), parseFloat(p2b[1])],[parseFloat(p2b[2]),parseFloat(p2b[3])]];
-		MapObject
-			.find({
-				location: {
-					$geoWithin: {
-						$box: bbox
-					}
-				},
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    const form = new formidable.IncomingForm();
+    form.parse(req, function(err, fields, files) {
+        const p2b = fields.bbox.split(",");
+        const zoom = fields.zoom
+        if (parseInt(zoom) < 10) {
+            res.json({features: {}, type: "FeatureCollection"});
+            return;
+        }
+        const bbox = [[parseFloat(p2b[0]), parseFloat(p2b[1])],[parseFloat(p2b[2]),parseFloat(p2b[3])]];
+        MapObject
+            .find({
+            	location: {
+			    	$geoWithin: {
+                        $box: bbox
+                    }
+                }, 
                 $or: [
                     {
                         "objectType": "pokemon",
@@ -91,9 +96,9 @@ router.post('/mapobjects/bbox', function (req, res) {
                     },
                     {"objectType": {$ne : "pokemon"}}
                 ],
-			}).exec((err, mapobjects) => {
-				if (err) {
-					res.status(500).json({'error': 'db', 'message': err.message}); return;
+            }).exec((err, mapobjects) => {
+            	if (err) {
+                	res.status(500).json({'error': 'db', 'message': err.message}); return;
                 }
 
 				const features = _.map(mapobjects, (mapobject) => {
@@ -107,22 +112,6 @@ router.post('/mapobjects/bbox', function (req, res) {
 				res.json({features: features, type: "FeatureCollection"});
 			});
 	});
-});
-
-router.get('/mapobjects/within', function (req, res) {
-	MapObject
-		.find({
-			location: {
-				$geoWithin: {
-					$geometry: req.body.geometry
-				}
-			}
-		}).exec((err, mapobjects) => {
-			if (err) {
-				res.status(500).json({'error': 'db', 'message': err.message}); return;
-			}
-			res.json(mapobjects);
-		});
 });
 
 function upsertMapObject(res, data, user) {
