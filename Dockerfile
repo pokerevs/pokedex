@@ -13,7 +13,6 @@ RUN groupadd --gid 1000 app && \
 ENV APP_DIR /home/app/pokedex
 
 # Drop root.
-USER app
 RUN mkdir ${APP_DIR}
 WORKDIR ${APP_DIR}
 
@@ -27,9 +26,12 @@ ADD package.json /tmp/package.json
 RUN cd /tmp && \
 	npm install --no-optional
 
-ADD . ${APP_DIR}
-RUN rm -rf ${APP_DIR}/node_modules && \
+COPY . ${APP_DIR}
+RUN chown -R app:app ${APP_DIR} && \
+	rm -rf ${APP_DIR}/node_modules && \
 	mv /tmp/node_modules ${APP_DIR}
+
+USER app
 
 ENV NODE_ENV production
 
