@@ -1,6 +1,7 @@
 // pokedex v0.1.0-alpha, whee!
 
-require('newrelic');
+if (process.env.NODE_ENV === 'production')
+	require('newrelic');
 const express = require('express'),
 	  mongoose = require('mongoose'),
 	  morgan = require('morgan'),
