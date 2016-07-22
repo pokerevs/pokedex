@@ -1,6 +1,7 @@
 # pokedex api
 
 **The following all sits under `/api`.**
+**AND IT'S ALL WRONG, DON'T HEED ITS ADVICE. For a good canonical source, see `api/routes.go`**
 
 ## /push
 ### POST /push/mapobject
