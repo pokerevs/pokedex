@@ -1,6 +1,9 @@
 package main
 
-import "os"
+import (
+	"os"
+	"errors"
+)
 
 type Config struct {
 	db           string
@@ -10,7 +13,7 @@ type Config struct {
 	server_mode  string
 }
 
-func LoadConfigFromEnvironment() Config {
+func LoadConfigFromEnvironment() (Config, error) {
 	config := Config{
 		db:           os.Getenv("DB"),
 		jwt_secret:   os.Getenv("JWT_SECRET"),
@@ -24,5 +27,8 @@ func LoadConfigFromEnvironment() Config {
 	if os.Getenv("DEBUG") != "" {
 		config.server_mode = "debug"
 	}
-	return config
+	if config.jwt_secret == "" {
+		return config, errors.New("A JWT secret must be provided in $JWT_SECRET!")
+	}
+	return config, nil
 }
