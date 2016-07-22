@@ -1,8 +1,8 @@
 package main
 
 import (
-	"os"
 	"errors"
+	"os"
 )
 
 type Config struct {
@@ -29,6 +29,9 @@ func LoadConfigFromEnvironment() (Config, error) {
 	}
 	if config.jwt_secret == "" {
 		return config, errors.New("A JWT secret must be provided in $JWT_SECRET!")
+	}
+	if config.db == "" {
+		return config, errors.New("A mongodb url must be provided in $DB!")
 	}
 	return config, nil
 }

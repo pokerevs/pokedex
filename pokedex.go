@@ -4,14 +4,13 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/dgrijalva/jwt-go"
-
-	"github.com/gorilla/mux"
-	// "github.com/gorilla/context"
-	"github.com/urfave/negroni"
 	"github.com/auth0/go-jwt-middleware"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/gorilla/mux"
+	"github.com/urfave/negroni"
 
 	"github.com/pokerevs/pokedex/api"
+	"github.com/pokerevs/pokedex/db"
 )
 
 func main() {
@@ -22,10 +21,13 @@ func main() {
 		log.Fatal("Error loading config: ", e)
 	}
 
+	db.InitConnection(config.db)
+	defer db.GetSession().Close()
+
 	r := mux.NewRouter()
 
-	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options {
-		ValidationKeyGetter: func (token *jwt.Token) (interface{}, error) {
+	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
+		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
 			return []byte(config.jwt_secret), nil
 		},
 		SigningMethod: jwt.SigningMethodHS256,
